@@ -6,7 +6,8 @@
 #include <QtQuick/QQuickView>
 #include <QGestureEvent>
 #include <QPinchGesture>
-#include <QtTest/QtTest>
+#include <QtDebug>
+
 
 simulation::simulation(QQuickView *viewer)
     : QObject(),
@@ -19,6 +20,8 @@ void simulation::simulateAndPostEvent(int eventCode, int mouseX, int mouseY, int
                                                   Qt::LeftButton, Qt::LeftButton, Qt::NoModifier
                                                   );
         QGuiApplication::postEvent(m_viewer, dblTapEvent);
+        initialX = mouseX;
+        initialY = mouseY;
     } else if(eventCode == 2) {
         QWheelEvent *zoomEvent = new QWheelEvent(QPoint(mouseX, mouseY),wheelAngle,Qt::LeftButton,
                                                  Qt::NoModifier);
@@ -30,11 +33,16 @@ void simulation::simulateAndPostEvent(int eventCode, int mouseX, int mouseY, int
         QWheelEvent* rotateEvent = new QWheelEvent(QPoint(mouseX, mouseY),wheelAngle,Qt::LeftButton,Qt::ShiftModifier);
         QGuiApplication::postEvent(m_viewer, rotateEvent);
     } else if(eventCode == 5) {
-
         QMouseEvent *pressEvent = new QMouseEvent(QEvent::MouseButtonPress, QPoint(mouseX, mouseY),
                                                   Qt::LeftButton, Qt::LeftButton, Qt::NoModifier
                                                   );
         QGuiApplication::postEvent(m_viewer, pressEvent);
-        QTimer::singleShot(300,this,SLOT(generateMouseEvent(0,x,y,0)));
+        initialX = mouseX;
+        initialY = mouseY;
+    } else {
+        QMouseEvent *releaseEvent = new QMouseEvent(QEvent::MouseButtonRelease, QPoint(initialX, initialY),
+                                                  Qt::LeftButton, Qt::LeftButton, Qt::NoModifier
+                                                  );
+        QGuiApplication::sendEvent(m_viewer, releaseEvent);
     }
 }

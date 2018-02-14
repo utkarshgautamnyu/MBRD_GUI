@@ -18,6 +18,8 @@ protected:
     void postEvent(int x, int y, int gesture_code, int wheelAngle);
 
     QQuickView* m_viewer;
+    int initialX;
+    int initialY;
 };
 
 #endif // SIMULATION_H

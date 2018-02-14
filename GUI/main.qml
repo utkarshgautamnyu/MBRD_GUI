@@ -30,6 +30,7 @@ Item {
         gesture.enabled: true
         focus: true
 
+
         MouseArea {
             property var isPopupOpen : false
             id: mouseArea;

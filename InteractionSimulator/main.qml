@@ -15,6 +15,7 @@ Rectangle {
     MouseArea {
         id: mouseArea;
         anchors.fill: parent
+        onReleased: communication.generateEvent(0,mouseX,mouseY,0)
         onDoubleClicked: communication.generateEvent(1,mouseX,mouseY,0)
         onWheel: {
             if (wheel.modifiers & Qt.ControlModifier)
@@ -27,6 +28,7 @@ Rectangle {
 
         onPositionChanged: {
             communication.generateEvent(5,mouseX,mouseY,0)
+            communication.generateEvent(0,mouseX,mouseY,0)
         }
     }
 
@@ -39,21 +41,21 @@ Rectangle {
             TouchPoint { id: touch1 },
             TouchPoint { id: touch2 }
         ]
-        PinchArea {
-            anchors.fill: parent
-            onPinchStarted: {
-                if (pinch.rotation > pinch.angle) {
-                    communication.generateEvent(4,pinch.center.x,pinch.center.y,pinch.rotation)
-                } else {
-                    communication.generateEvent(2,pinch.center.x,pinch.center.y,pinch.angle)
-                }
+
+        onPressed: {
+            if (touch1.pressed && !touch2.pressed) {
+                communication.detectDoubleTap(touch1.x,touch1.y);
+            } else if (touch2.pressed && !touch1.pressed) {
+                communication.detectDoubleTap(touch2.x,touch2.y);
+            } else {
+                communication.generateTouchEvent(touch1.x,touch1.y,touch2.x,touch2.y,touch1.rotation,touch2.rotation)
             }
-            onPinchUpdated: {
-                if (pinch.rotation > pinch.angle) {
-                    communication.generateEvent(4,pinch.center.x,pinch.center.y,pinch.rotation)
-                } else {
-                    communication.generateEvent(2,pinch.center.x,pinch.center.y,pinch.angle)
-                }
+        }
+        onTouchUpdated:  {
+            if (touch1.pressed && !touch2.pressed) {
+                communication.generateEvent(5,touch1.sceneX,touch2.sceneY,0);
+            } else {
+                communication.generateTouchEvent(touch1.x,touch1.y,touch2.x,touch2.y,touch1.rotation,touch2.rotation)
             }
         }
     }

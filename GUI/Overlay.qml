@@ -33,6 +33,9 @@ Dialog {
             to: 0.0
         }
     }
+    closePolicy: "CloseOnPressOutside";
+
+
     ColumnLayout {
         Layout.margins: 20
         spacing: 25
